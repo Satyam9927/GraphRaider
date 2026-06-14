@@ -1,0 +1,14 @@
+services:
+  graphraider:
+    build: .
+    image: graphraider:latest
+    container_name: graphraider
+    ports:
+      - "3000:3000"   # UI  -> open http://localhost:3000
+      - "8000:8000"   # API + WebSocket (the browser talks to this directly)
+    volumes:
+      - graphraider-data:/data   # persists config.json + request_log.json
+    restart: unless-stopped
+
+volumes:
+  graphraider-data:

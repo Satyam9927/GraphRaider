@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraphRaider — GraphQL Security Tester</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <a class="brand" href="/" title="Back to landing page" style="text-decoration:none;color:inherit;">
+    <svg class="brand-mark" width="30" height="30" viewBox="0 0 100 100" style="border-radius:8px;box-shadow:0 4px 14px rgba(91,140,255,.4);"><rect width="100" height="100" rx="22" fill="#0e1628"/><g fill="none"><g stroke="rgba(122,162,255,0.7)" stroke-width="1.8"><line x1="50" y1="23" x2="73.4" y2="36.5"/><line x1="73.4" y1="36.5" x2="73.4" y2="63.5"/><line x1="73.4" y1="63.5" x2="50" y2="77"/><line x1="50" y1="77" x2="26.6" y2="63.5"/><line x1="26.6" y1="63.5" x2="26.6" y2="36.5"/><line x1="26.6" y1="36.5" x2="50" y2="23"/></g><g stroke="rgba(100,140,255,0.6)" stroke-width="1.8"><line x1="50" y1="23" x2="50" y2="77"/><line x1="73.4" y1="36.5" x2="26.6" y2="63.5"/><line x1="73.4" y1="63.5" x2="26.6" y2="36.5"/></g></g><circle cx="50" cy="50" r="5" fill="#7a6cff"/><circle cx="50" cy="23" r="6.5" fill="#5b8cff"/><circle cx="73.4" cy="63.5" r="6.5" fill="#5b8cff"/><circle cx="50" cy="77" r="6.5" fill="#5b8cff"/><circle cx="26.6" cy="63.5" r="6.5" fill="#5b8cff"/><circle cx="26.6" cy="36.5" r="6.5" fill="#5b8cff"/><circle cx="73.4" cy="36.5" r="6.5" fill="#ef4444"/></svg>
+    <div class="brand-name">Graph<span>Raider</span></div>
+    <div class="brand-tag" style="border-left:1px solid var(--border); padding-left:10px;">GraphQL security testing toolkit</div>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="ws-pill"><span class="ws-dot" id="wsDot"></span><span id="wsLabel">Disconnected</span></div>
+</div>
+
+<!-- Shell -->
+<div class="shell">
+
+  <!-- Nav rail -->
+  <div class="rail">
+    <div class="rail-btn active" data-view="runner"><div class="ico">▶</div><div class="lbl">RUNNER</div></div>
+    <div class="rail-btn" data-view="repeater"><div class="ico">⇄</div><div class="lbl">REPEATER</div></div>
+    <div class="rail-btn" data-view="history"><div class="ico">≡</div><div class="lbl">HISTORY</div><span class="rail-badge" id="histBadge" style="display:none">0</span></div>
+    <div class="rail-btn" data-view="checklist"><div class="ico">☑</div><div class="lbl">CHECKS</div></div>
+    <div class="rail-spacer"></div>
+    <div class="rail-btn" data-view="settings"><div class="ico">⚙</div><div class="lbl">SETTINGS</div></div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ RUNNER ══════════════════════════════════════════ -->
+    <div class="view active" id="view-runner">
+      <div class="runner">
+        <div class="tc-side">
+          <div class="tc-side-head">
+            <h3><span>Test Cases <span id="tcCount" style="color:var(--text)"></span></span></h3>
+            <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+            <div class="progress-txt" id="progTxt">0 / 0 completed</div>
+          </div>
+          <div class="tc-list" id="tcList">
+            <div class="empty" style="padding:30px"><div class="ico">⚡</div><div>Connecting to backend…</div></div>
+          </div>
+          <div class="tc-ctrl">
+            <button class="btn-run" id="btnRun" onclick="runSelected()" disabled>▶ Run Selected</button>
+            <button class="btn btn-sm" id="btnRunAll" onclick="runAll()" disabled>Run All</button>
+          </div>
+        </div>
+        <div class="log-pane">
+          <div class="log-head">
+            <div class="title">Live Console</div>
+            <div class="tc-tag" id="logTag"></div>
+            <button class="btn btn-sm" onclick="runnerToRepeater()" title="Send this test's request to the Repeater">→ Repeater</button>
+            <button class="btn-ghost btn btn-sm" onclick="resetFinding()" title="Clear this test's result + logs">Reset</button>
+            <button class="btn-ghost btn btn-sm" onclick="clearLogs()">Clear</button>
+          </div>
+          <div class="verdict" id="verdict"></div>
+          <div class="log-out" id="logOut">
+            <div class="empty"><div class="ico">📋</div><div>Select a test case and click <b>Run Selected</b></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REPEATER ════════════════════════════════════════ -->
+    <div class="view" id="view-repeater">
+      <div class="repeater">
+        <div class="rep-saved">
+          <div class="rep-saved-head"><h3>Saved Requests</h3><button class="btn btn-sm" onclick="repNew()">+ New</button></div>
+          <div class="rep-saved-list" id="repList"></div>
+        </div>
+        <div class="rep-main">
+          <div class="rep-bar">
+            <select id="repMethod" style="width:90px">
+              <option>POST</option><option>GET</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+            </select>
+            <input class="url" id="repUrl" placeholder="https://target/graphql">
+            <select id="repSession" style="width:130px" title="Auth session to attach" onchange="onRepSessionChange()">
+              <option value="primary">Session A</option>
+              <option value="secondary">Session B</option>
+              <option value="none">No auth</option>
+            </select>
+            <button class="btn btn-sm" id="repHdrToggle" onclick="toggleRepHeaders()" title="Show/hide headers in request and response">Hide Headers</button>
+            <button class="btn btn-primary" onclick="repSend()">Send ▶</button>
+            <button class="btn btn-sm" onclick="repSave()">Save</button>
+          </div>
+          <div class="rep-body">
+            <div class="rep-col">
+              <div class="rep-col-head"><span>Request</span><span style="font-weight:400;text-transform:none;color:var(--faint)" id="repReqHint">raw — header lines, blank line, then body</span></div>
+              <textarea id="repRequest" spellcheck="false" placeholder='Content-Type: application/json&#10;&#10;{ "query": "{ __typename }" }'></textarea>
+            </div>
+            <div class="rep-col">
+              <div class="rep-col-head"><span>Response</span><button class="btn-ghost btn btn-sm" onclick="repToHistory()">Log to History</button></div>
+              <div class="rep-resp-meta" id="repMeta"><span style="color:var(--faint)">No response yet</span></div>
+              <div class="rep-resp-body" id="repResp"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HISTORY ═════════════════════════════════════════ -->
+    <div class="view" id="view-history">
+      <div class="panel-head">
+        <h2>Request History</h2>
+        <div class="sub" id="histSub">0 requests</div>
+        <div class="topbar-spacer"></div>
+        <button class="btn btn-sm" onclick="clearHistory()">Clear History</button>
+      </div>
+      <div class="hist">
+        <div class="hist-list">
+          <table class="hist-table">
+            <thead><tr><th>Time</th><th>Method</th><th>URL</th><th>Status</th><th>ms</th><th>Source</th></tr></thead>
+            <tbody id="histBody"></tbody>
+          </table>
+          <div class="empty" id="histEmpty"><div class="ico">≡</div><div>No requests yet. Run tests or use the Repeater.</div></div>
+        </div>
+        <div class="hist-detail" id="histDetail" style="display:none">
+          <div class="hist-detail-head"><b>Request detail</b><button class="btn btn-sm" onclick="histToRepeater()">→ Send to Repeater</button></div>
+          <div class="hist-detail-body" id="histDetailBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CHECKLIST ═══════════════════════════════════════ -->
+    <div class="view" id="view-checklist">
+      <div class="panel-head">
+        <h2>Pentest Checklist</h2>
+        <div class="sub">Manual GraphQL methodology — progress saved automatically</div>
+        <div class="topbar-spacer"></div>
+        <button class="btn btn-sm" onclick="resetChecklist()">Reset all</button>
+      </div>
+      <div class="cl-layout">
+        <div class="cl-side">
+          <div class="cl-side-progress">
+            <div class="cl-ring" id="clRing">0%</div>
+            <div style="flex:1">
+              <div class="progress-track"><div class="progress-fill" id="clFill"></div></div>
+              <div class="progress-txt" id="clTxt">0 of 0 checked</div>
+            </div>
+          </div>
+          <div class="cl-tabs" id="clTabs"></div>
+        </div>
+        <div class="cl-pane" id="clPane"></div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS ════════════════════════════════════════ -->
+    <div class="view" id="view-settings">
+      <div class="subtabs">
+        <div class="subtab active" data-sub="config">Configuration</div>
+        <div class="subtab" data-sub="eval">Evaluation</div>
+        <div class="subtab" data-sub="proxy">Proxy &amp; Intercept</div>
+      </div>
+      <div class="scroll">
+
+        <!-- Config sub-view -->
+        <div class="subview active" id="sub-config"><div class="form-wrap">
+          <div class="field">
+            <label class="fl">GraphQL Endpoint</label>
+            <input id="cfgEndpoint" placeholder="https://target.example.com/graphql">
+            <div class="hint">The single GraphQL URL under test. Used by every test case, the baseline probe, and the Repeater default.</div>
+          </div>
+
+          <!-- Session A -->
+          <div class="card">
+            <div class="card-title">🅰 Session A — Primary</div>
+            <div class="field">
+              <label class="fl">Token type</label>
+              <div class="seg" data-session="primary">
+                <button class="seg-btn active" data-type="bearer">Bearer / JWT</button>
+                <button class="seg-btn" data-type="cookie">Cookie</button>
+                <button class="seg-btn" data-type="header">Custom Header</button>
+              </div>
+            </div>
+            <div class="auth-fields active" data-session="primary" data-type="bearer">
+              <label class="fl">Bearer token</label>
+              <textarea id="pri-bearer" rows="3" placeholder="eyJhbGciOi… (JWT or opaque token)" oninput="previewToken('primary')"></textarea>
+              <div class="token-meta" id="pri-meta"></div>
+            </div>
+            <div class="auth-fields" data-session="primary" data-type="cookie">
+              <div class="field"><label class="fl">Cookie name</label><input id="pri-cookie-name" placeholder="session"></div>
+              <div class="field"><label class="fl">Cookie value</label><input id="pri-cookie-value" placeholder="abc123…"></div>
+            </div>
+            <div class="auth-fields" data-session="primary" data-type="header">
+              <div class="field"><label class="fl">Header name</label><input id="pri-header-name" placeholder="X-API-Key"></div>
+              <div class="field"><label class="fl">Header value</label><input id="pri-header-value" placeholder="key…"></div>
+            </div>
+          </div>
+
+          <!-- Session B -->
+          <div class="card">
+            <div class="card-title">🅱 Session B — Secondary <span style="color:var(--faint);font-weight:500;text-transform:none">(for cross-session / BOLA tests)</span></div>
+            <div class="field">
+              <label class="fl">Token type</label>
+              <div class="seg" data-session="secondary">
+                <button class="seg-btn active" data-type="bearer">Bearer / JWT</button>
+                <button class="seg-btn" data-type="cookie">Cookie</button>
+                <button class="seg-btn" data-type="header">Custom Header</button>
+              </div>
+            </div>
+            <div class="auth-fields active" data-session="secondary" data-type="bearer">
+              <label class="fl">Bearer token</label>
+              <textarea id="sec-bearer" rows="3" placeholder="second account's token…" oninput="previewToken('secondary')"></textarea>
+              <div class="token-meta" id="sec-meta"></div>
+            </div>
+            <div class="auth-fields" data-session="secondary" data-type="cookie">
+              <div class="field"><label class="fl">Cookie name</label><input id="sec-cookie-name" placeholder="session"></div>
+              <div class="field"><label class="fl">Cookie value</label><input id="sec-cookie-value" placeholder="xyz789…"></div>
+            </div>
+            <div class="auth-fields" data-session="secondary" data-type="header">
+              <div class="field"><label class="fl">Header name</label><input id="sec-header-name" placeholder="X-API-Key"></div>
+              <div class="field"><label class="fl">Header value</label><input id="sec-header-value" placeholder="key…"></div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <button class="btn btn-primary" onclick="saveConfig(true)">Save Configuration</button>
+            <span class="saved-flash" id="cfgSaved">✓ Saved</span>
+          </div>
+        </div></div>
+
+        <!-- Evaluation sub-view -->
+        <div class="subview" id="sub-eval"><div class="form-wrap">
+          <div class="field">
+            <label class="fl">Evaluation mode</label>
+            <div class="radio-group" id="modeRadios">
+              <label class="radio-card" data-mode="rule_based">
+                <input type="radio" name="cfgMode" value="rule_based" onchange="onModeChange()">
+                <span class="rc-title">Rule-Based</span><span class="rc-tag">no API key</span>
+              </label>
+              <label class="radio-card" data-mode="hybrid">
+                <input type="radio" name="cfgMode" value="hybrid" onchange="onModeChange()">
+                <span class="rc-title">Hybrid</span><span class="rc-tag">rules + Claude</span>
+              </label>
+              <label class="radio-card" data-mode="full_claude">
+                <input type="radio" name="cfgMode" value="full_claude" onchange="onModeChange()">
+                <span class="rc-title">Full Claude</span><span class="rc-tag">AI-powered</span>
+              </label>
+            </div>
+            <div class="mode-desc" id="modeDesc"></div>
+          </div>
+          <div class="info-box">
+            <b>The 3-agent framework</b><br>
+            <b>Agent 1 — Sender:</b> issues each request and captures the raw result.<br>
+            <b>Agent 2 — Validator:</b> confirms the round-trip; drives smart retries on transport errors.<br>
+            <b>Agent 3 — Critic:</b> renders the PASS (secure) / FAIL (vulnerable) verdict.<br>
+            Hybrid / Full Claude call <code>claude-sonnet-4-6</code> and fall back to rules if the API call fails.
+          </div>
+          <div class="field" id="apiKeyField" style="display:none;margin-top:16px">
+            <label class="fl">Anthropic API key</label>
+            <input id="cfgApiKey" type="password" placeholder="sk-ant-…">
+            <div class="hint">Needed for Hybrid / Full Claude. Stored only in your local config.json.</div>
+          </div>
+
+          <div class="save-bar" style="margin-top:18px">
+            <button class="btn btn-primary" onclick="saveConfig(true)">Save Evaluation Settings</button>
+            <span class="saved-flash" id="evalSaved">✓ Saved</span>
+          </div>
+        </div></div>
+
+        <!-- Proxy sub-view -->
+        <div class="subview" id="sub-proxy"><div class="form-wrap">
+          <div class="field">
+            <div class="row"><input type="checkbox" id="proxyEnabled" onchange="saveConfig()">
+              <label for="proxyEnabled" style="margin:0;font-weight:600;font-size:13px">Route all traffic through an intercepting proxy</label></div>
+            <div class="hint">When enabled, every request from the Runner and Repeater is sent through the proxy below, and TLS verification is disabled so Burp Suite / OWASP ZAP can intercept.</div>
+          </div>
+          <div class="field">
+            <label class="fl">Proxy URL</label>
+            <input id="proxyUrl" value="http://127.0.0.1:8080" placeholder="http://127.0.0.1:8080">
+          </div>
+          <div class="info-box">
+            <b>Burp Suite / ZAP setup</b><br>
+            1. Start the proxy listener on <code>127.0.0.1:8080</code>.<br>
+            2. Enable the toggle above and Save.<br>
+            3. GraphRaider disables certificate verification automatically while proxying — no CA import needed.<br>
+            4. Every test-case and Repeater request appears in the proxy's HTTP history for manual review.<br>
+            5. Use <b>Send to Repeater</b> from History to replay any captured request by hand.
+          </div>
+          <div class="save-bar" style="margin-top:18px">
+            <button class="btn btn-primary" onclick="saveConfig(true)">Save Proxy Settings</button>
+            <span class="saved-flash" id="proxySaved">✓ Saved</span>
+          </div>
+        </div></div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

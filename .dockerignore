@@ -1,0 +1,26 @@
+# Build context exclusions — keep the image small and secrets out.
+.git
+.gitignore
+README.md
+*.md
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Node
+frontend/node_modules/
+npm-debug.log*
+
+# Local state (never bake tokens / logs into the image)
+backend/config.json
+backend/request_log.json
+.graphraider.pids
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="22" fill="#0e1628"/>
+  <g fill="none">
+    <g stroke="rgba(122,162,255,0.7)" stroke-width="2">
+      <line x1="50" y1="23" x2="73.4" y2="36.5"/><line x1="73.4" y1="36.5" x2="73.4" y2="63.5"/>
+      <line x1="73.4" y1="63.5" x2="50" y2="77"/><line x1="50" y1="77" x2="26.6" y2="63.5"/>
+      <line x1="26.6" y1="63.5" x2="26.6" y2="36.5"/><line x1="26.6" y1="36.5" x2="50" y2="23"/>
+    </g>
+    <g stroke="rgba(100,140,255,0.6)" stroke-width="2">
+      <line x1="50" y1="23" x2="50" y2="77"/><line x1="73.4" y1="36.5" x2="26.6" y2="63.5"/><line x1="73.4" y1="63.5" x2="26.6" y2="36.5"/>
+    </g>
+  </g>
+  <circle cx="50" cy="50" r="5.5" fill="#7a6cff"/>
+  <circle cx="50" cy="23" r="7" fill="#5b8cff"/><circle cx="73.4" cy="63.5" r="7" fill="#5b8cff"/>
+  <circle cx="50" cy="77" r="7" fill="#5b8cff"/><circle cx="26.6" cy="63.5" r="7" fill="#5b8cff"/><circle cx="26.6" cy="36.5" r="7" fill="#5b8cff"/>
+  <circle cx="73.4" cy="36.5" r="7" fill="#ef4444"/>
+</svg>

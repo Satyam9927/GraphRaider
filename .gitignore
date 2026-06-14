@@ -1,0 +1,27 @@
+# ── GraphRaider ──────────────────────────────────────────
+# Local config holds tokens / cookies / API keys — NEVER commit it.
+backend/config.json
+backend/request_log.json
+.graphraider.pids
+
+# ── Python ───────────────────────────────────────────────
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ── Node ─────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Editors / OS ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

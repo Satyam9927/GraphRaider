@@ -1,0 +1,30 @@
+{
+  "endpoint": "https://example.com/graphql",
+  "agent_mode": "rule_based",
+  "api_key": "",
+  "proxy_enabled": false,
+  "proxy": "http://127.0.0.1:8080",
+  "primary": {
+    "label": "Session A",
+    "auth_type": "bearer",
+    "bearer_token": "",
+    "cookie_name": "session",
+    "cookie_value": "",
+    "header_name": "X-API-Key",
+    "header_value": ""
+  },
+  "secondary": {
+    "label": "Session B",
+    "auth_type": "bearer",
+    "bearer_token": "",
+    "cookie_name": "session",
+    "cookie_value": "",
+    "header_name": "X-API-Key",
+    "header_value": ""
+  },
+  "results": {},
+  "testLogs": {},
+  "history": [],
+  "checklist": {},
+  "repeater": []
+}
