@@ -5,12 +5,12 @@
 # ============================================================
 set -e
 
-CONFIG_FILE="${GRAPHRAIDER_CONFIG:-/app/backend/config.json}"
+CONFIG_FILE="${GRAPHRAIDER_CONFIG:-/app/storage/config.json}"
 
 # Bootstrap config.json from the example if it doesn't exist yet.
 mkdir -p "$(dirname "$CONFIG_FILE")"
 if [ ! -f "$CONFIG_FILE" ]; then
-  cp /app/backend/config.example.json "$CONFIG_FILE"
+  cp /app/storage/config.example.json "$CONFIG_FILE"
   echo "[config] created $CONFIG_FILE from example"
 else
   echo "[config] using existing $CONFIG_FILE"

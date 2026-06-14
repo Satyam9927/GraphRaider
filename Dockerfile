@@ -22,7 +22,7 @@ RUN cd frontend && npm install --omit=dev --no-audit --no-fund
 # ── Application source ──────────────────────────────────────
 COPY backend/ backend/
 COPY frontend/ frontend/
-COPY landing/ landing/
+COPY storage/ storage/
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

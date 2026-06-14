@@ -4,7 +4,7 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const LANDING = path.join(__dirname, "..", "landing", "index.html");
+const LANDING = path.join(__dirname, "public", "landing.html");
 const DASHBOARD = path.join(__dirname, "public", "index.html");
 
 // Landing page is the default route.

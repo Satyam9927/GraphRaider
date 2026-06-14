@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
   start.ps1 - GraphRaider launcher (Windows)
-  * Creates backend/config.json from the example if it doesn't exist
+  * Creates storage/config.json from the example if it doesn't exist
   * Creates a Python venv if one does not exist
   * Installs Python + Node dependencies
   * Starts the FastAPI backend (port 8000) and Express frontend (port 3000)
@@ -21,14 +21,16 @@ Write-Host "   GraphRaider  -  GraphQL Security Tester" -ForegroundColor White
 Write-Host "  ===================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# 0. Create config.json from example if missing
-$configPath  = Join-Path $backendDir "config.json"
-$examplePath = Join-Path $backendDir "config.example.json"
+# 0. Create storage/config.json from example if missing
+$storageDir  = Join-Path $scriptDir "storage"
+if (-not (Test-Path $storageDir)) { New-Item -ItemType Directory -Path $storageDir | Out-Null }
+$configPath  = Join-Path $storageDir "config.json"
+$examplePath = Join-Path $storageDir "config.example.json"
 if (-not (Test-Path $configPath)) {
     Copy-Item $examplePath $configPath
-    Write-Host "  [config] Created backend/config.json from example (git-ignored)." -ForegroundColor Green
+    Write-Host "  [config] Created storage/config.json from example (git-ignored)." -ForegroundColor Green
 } else {
-    Write-Host "  [config] Using existing backend/config.json." -ForegroundColor Green
+    Write-Host "  [config] Using existing storage/config.json." -ForegroundColor Green
 }
 
 # 1. Python venv

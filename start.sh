@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
 #  start.sh - GraphRaider launcher (macOS / Linux)
-#   * Creates backend/config.json from the example if missing
+#   * Creates storage/config.json from the example if missing
 #   * Creates a Python venv, installs Python + Node deps
 #   * Starts the FastAPI backend (8000) and Express frontend (3000)
 #   * Opens the browser
@@ -12,6 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/venv"
 BACKEND_DIR="$SCRIPT_DIR/backend"
 FRONTEND_DIR="$SCRIPT_DIR/frontend"
+STORAGE_DIR="$SCRIPT_DIR/storage"
 
 cyan()  { printf "\033[36m%s\033[0m\n" "$1"; }
 green() { printf "\033[32m%s\033[0m\n" "$1"; }
@@ -27,12 +28,13 @@ echo ""
 PY="$(command -v python3 || command -v python || true)"
 if [ -z "$PY" ]; then echo "Python 3.10+ is required."; exit 1; fi
 
-# 0. config.json from example
-if [ ! -f "$BACKEND_DIR/config.json" ]; then
-  cp "$BACKEND_DIR/config.example.json" "$BACKEND_DIR/config.json"
-  green "  [config] Created backend/config.json from example (git-ignored)."
+# 0. config.json from example (in storage/)
+mkdir -p "$STORAGE_DIR"
+if [ ! -f "$STORAGE_DIR/config.json" ]; then
+  cp "$STORAGE_DIR/config.example.json" "$STORAGE_DIR/config.json"
+  green "  [config] Created storage/config.json from example (git-ignored)."
 else
-  green "  [config] Using existing backend/config.json."
+  green "  [config] Using existing storage/config.json."
 fi
 
 # 1. venv

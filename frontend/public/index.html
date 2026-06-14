@@ -56,9 +56,17 @@
           <div class="log-head">
             <div class="title">Live Console</div>
             <div class="tc-tag" id="logTag"></div>
-            <button class="btn btn-sm" onclick="runnerToRepeater()" title="Send this test's request to the Repeater">→ Repeater</button>
-            <button class="btn-ghost btn btn-sm" onclick="resetFinding()" title="Clear this test's result + logs">Reset</button>
-            <button class="btn-ghost btn btn-sm" onclick="clearLogs()">Clear</button>
+            <div class="btn-group" title="Expand or collapse all request &amp; response details">
+              <button class="gbtn" onclick="expandAllLogs()">▾ Expand</button>
+              <button class="gbtn" onclick="collapseAllLogs()">▸ Collapse</button>
+            </div>
+            <div class="btn-group">
+              <button class="gbtn" onclick="resetFinding()" title="Clear this test's result + logs">Reset</button>
+              <button class="gbtn" onclick="clearLogs()" title="Clear the console">Clear</button>
+            </div>
+            <button class="repeater-btn" onclick="runnerToRepeater()" title="Send this test's request to the Repeater">
+              <span class="rb-short">⇄ Repeater</span><span class="rb-full">⇄ Send to Repeater</span>
+            </button>
           </div>
           <div class="verdict" id="verdict"></div>
           <div class="log-out" id="logOut">

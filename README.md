@@ -2,6 +2,12 @@
 
 **A GraphQL security testing toolkit for pentesters.**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/Satyam9927/GraphRaider/actions/workflows/ci.yml/badge.svg)](https://github.com/Satyam9927/GraphRaider/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![Node](https://img.shields.io/badge/node-18%2B-brightgreen.svg)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
+
 GraphRaider runs a battery of endpoint-agnostic GraphQL security checks, gives you a
 Burp-style **Repeater**, a full **request History**, and a manual **methodology checklist** -
 all in a clean local web UI. It works against **any** GraphQL endpoint and routes cleanly
@@ -65,7 +71,7 @@ Each picks one token type:
 
 ### Persistent memory
 Your endpoint, sessions, results, console logs, request history, saved Repeater requests, and
-checklist state (incl. notes) are saved to `backend/config.json` automatically and restored on
+checklist state (incl. notes) are saved to `storage/config.json` automatically and restored on
 next launch. That file is **git-ignored** because it contains tokens / cookies / API keys.
 
 ### Built-in test cases
@@ -110,7 +116,7 @@ best crafted by hand in the **Repeater** - use the Checklist tab as your methodo
 ```
 
 `start.ps1` will:
-1. Create `backend/config.json` from `config.example.json` if it doesn't exist.
+1. Create `storage/config.json` from `storage/config.example.json` if it doesn't exist.
 2. Create a Python virtualenv (`venv/`) and install backend deps.
 3. Install the frontend's Node deps.
 4. Launch the backend (`:8000`) and frontend (`:3000`) in separate windows.
@@ -205,20 +211,29 @@ GraphRaider/
 ├── docker-compose.yml          # one-command run + persistent volume
 ├── .dockerignore
 ├── .gitignore
+├── LICENSE · CHANGELOG.md
+├── .github/                    # CONTRIBUTING, SECURITY, CI, issue/PR templates
+├── storage/                    # persisted state (see below)
+│   ├── config.example.json     # template - copied to config.json on first start
+│   ├── config.json             # YOUR settings + tokens (git-ignored, auto-created)
+│   └── request_log.json        # request log (git-ignored, auto-created)
 ├── backend/
 │   ├── main.py                 # FastAPI + WebSocket runner, repeater + config endpoints
 │   ├── agents.py               # 3-agent framework (Sender / Validator / Critic)
 │   ├── test_cases.py           # generic, endpoint-agnostic GraphQL test cases
 │   ├── jwt_utils.py            # JWT decode / tamper helpers
-│   ├── proxy_log.py            # per-session request log
-│   ├── requirements.txt
-│   ├── config.example.json     # template - copied to config.json on first start
-│   └── config.json             # YOUR settings + tokens (git-ignored, auto-created)
+│   ├── proxy_log.py            # request log writer
+│   └── requirements.txt
 └── frontend/
-    ├── server.js               # static Express server
+    ├── server.js               # static Express server (landing at /, app at /dashboard)
     ├── package.json
-    └── public/                 # index.html · styles.css · app.js
+    └── public/                 # landing.html · index.html (app) · app.js · styles.css · favicon.svg
 ```
+
+All writable state lives in **`storage/`** (override with the `GRAPHRAIDER_CONFIG` /
+`GRAPHRAIDER_LOG` env vars; Docker points these at a mounted volume). Only
+`storage/config.example.json` is committed - your real `config.json` and `request_log.json`
+are git-ignored.
 
 ---
 

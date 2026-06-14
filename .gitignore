@@ -1,7 +1,8 @@
 # ── GraphRaider ──────────────────────────────────────────
 # Local config holds tokens / cookies / API keys — NEVER commit it.
-backend/config.json
-backend/request_log.json
+# storage/config.example.json IS committed; the live config + log are not.
+storage/config.json
+storage/request_log.json
 .graphraider.pids
 
 # ── Python ───────────────────────────────────────────────

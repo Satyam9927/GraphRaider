@@ -3,14 +3,14 @@ Per-session request log. Every request the sender issues (baseline + attack) is
 recorded here so the Critic can correlate baseline vs. attack outcomes, and so the
 UI History tab can replay them.
 
-Written to: backend/request_log.json  (git-ignored)
+Written to: storage/request_log.json  (git-ignored)
 """
 import json
 import os
 from datetime import datetime, timezone
 from typing import List, Optional
 
-LOG_PATH = os.environ.get("GRAPHRAIDER_LOG") or os.path.join(os.path.dirname(__file__), "request_log.json")
+LOG_PATH = os.environ.get("GRAPHRAIDER_LOG") or os.path.join(os.path.dirname(__file__), "..", "storage", "request_log.json")
 _entries: List[dict] = []
 
 # Header names whose values are secrets and must never be written to disk in full.
@@ -72,6 +72,7 @@ def clear_test(test_id: str) -> None:
 
 def _flush() -> None:
     try:
+        os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
         with open(LOG_PATH, "w", encoding="utf-8") as f:
             json.dump(_entries, f, indent=2)
     except OSError:

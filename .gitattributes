@@ -1,0 +1,27 @@
+# Normalize line endings: auto-detect text, check out as LF by default.
+* text=auto eol=lf
+
+# Windows scripts must stay CRLF.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Unix shell scripts must stay LF (CRLF breaks them with `\r` errors).
+*.sh             text eol=lf
+docker-entrypoint.sh text eol=lf
+
+# Explicit text types (kept LF).
+*.py   text eol=lf
+*.js   text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css  text eol=lf
+*.svg  text eol=lf
+*.md   text eol=lf
+
+# Binary assets — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

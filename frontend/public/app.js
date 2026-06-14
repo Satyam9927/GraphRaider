@@ -294,13 +294,21 @@ function logCollapse(level, title, detail, ts) {
   const bc = { req:"b-req", base:"b-base", resp:"b-resp" }[level] || "b-resp";
   const lbl = { req:"REQUEST", base:"BASELINE", resp:"RESPONSE" }[level] || "RESP";
   const did = "d" + Math.random().toString(36).slice(2);
+  const openByDefault = level === "req" || level === "resp";  // requests/responses expanded by default
   const row = document.createElement("div"); row.className = "log-entry";
-  row.innerHTML = `<span class="log-ts">${ts || ""}</span><span class="log-badge ${bc}">${lbl}</span><span class="log-msg collapse" onclick="toggleDetail('${did}',this)">${esc(title)}</span>`;
-  const d = document.createElement("div"); d.className = "detail"; d.id = did; d.textContent = detail;
+  row.innerHTML = `<span class="log-ts">${ts || ""}</span><span class="log-badge ${bc}">${lbl}</span><span class="log-msg collapse${openByDefault ? " open" : ""}" onclick="toggleDetail('${did}',this)">${esc(title)}</span>`;
+  const d = document.createElement("div"); d.className = "detail" + (openByDefault ? " open" : ""); d.id = did; d.textContent = detail;
   out.appendChild(row); out.appendChild(d); out.scrollTop = out.scrollHeight; store({ c: true, level, title, detail, ts });
 }
 function store(e) { if (!currentRunId) return; const a = testLogs[currentRunId] = testLogs[currentRunId] || []; a.push(e); if (a.length > 400) a.splice(0, 60); }
 function toggleDetail(id, btn) { $(id).classList.toggle("open"); btn.classList.toggle("open"); }
+function setAllDetails(open) {
+  const out = $("logOut");
+  out.querySelectorAll(".detail").forEach(d => d.classList.toggle("open", open));
+  out.querySelectorAll(".log-msg.collapse").forEach(s => s.classList.toggle("open", open));
+}
+function expandAllLogs() { setAllDetails(true); }
+function collapseAllLogs() { setAllDetails(false); }
 function restoreLogs(id) {
   const out = $("logOut"); out.innerHTML = ""; hideVerdict();
   const s = testLogs[id] || [];

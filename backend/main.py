@@ -12,6 +12,7 @@ Endpoints:
 import asyncio
 import json
 import os
+import shutil
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -23,8 +24,25 @@ import jwt_utils
 import proxy_log
 import test_cases as tc_mod
 
-CONFIG_PATH = os.environ.get("GRAPHRAIDER_CONFIG") or os.path.join(os.path.dirname(__file__), "config.json")
+# Persisted state lives in the repo-root `storage/` folder (or a mounted volume in Docker
+# via GRAPHRAIDER_CONFIG / GRAPHRAIDER_LOG).
+STORAGE_DIR  = os.path.join(os.path.dirname(__file__), "..", "storage")
+CONFIG_PATH  = os.environ.get("GRAPHRAIDER_CONFIG") or os.path.join(STORAGE_DIR, "config.json")
+EXAMPLE_PATH = os.path.join(STORAGE_DIR, "config.example.json")
 BASELINE_QUERY = json.dumps({"query": "{ __typename }"})
+
+
+def _ensure_config():
+    """Create config.json from the example on first run."""
+    try:
+        os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
+        if not os.path.exists(CONFIG_PATH) and os.path.exists(EXAMPLE_PATH):
+            shutil.copyfile(EXAMPLE_PATH, CONFIG_PATH)
+    except OSError:
+        pass
+
+
+_ensure_config()
 
 app = FastAPI(title="GraphRaider — GraphQL Security Tester")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
